@@ -98,6 +98,15 @@ digita.
 
 ---
 
+## Como foi feito
+
+O DSE foi desenvolvido com apoio de inteligência artificial: o código foi escrito
+em conversa com o **Claude**, da Anthropic. As decisões de projeto, o desenho da
+interface, os testes em hardware real (DualShock 4 e DualSense, por USB e
+Bluetooth) e o rumo de cada funcionalidade são de [finjackin](https://github.com/finjackin1).
+
+---
+
 ## Licença
 
 DSE © 2026 finjackin. Todos os direitos reservados.
