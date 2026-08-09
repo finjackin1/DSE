@@ -1,0 +1,25 @@
+# Saídas de build
+bin/
+obj/
+dist/
+
+# Publicação portable
+DSE-Portable/
+*.zip
+
+# Log de diagnóstico e o marcador que o habilita
+dse.log
+log
+log.*
+
+# Visual Studio / VS Code / Rider
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store

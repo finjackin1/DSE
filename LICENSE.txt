@@ -1,0 +1,58 @@
+DSE — Termos de Uso
+Copyright (C) 2026 finjackin. Todos os direitos reservados.
+
+
+1. O QUE VOCÊ PODE FAZER
+
+Você pode instalar e usar o DSE livremente, em quantos computadores quiser,
+para uso pessoal. Você também pode repassar o programa a outras pessoas,
+desde que o faça sem cobrar nada e mantendo o pacote completo e inalterado,
+incluindo este arquivo.
+
+
+2. O QUE NÃO É PERMITIDO
+
+- Vender, alugar, licenciar ou cobrar de qualquer forma pelo DSE, seja
+  sozinho ou como parte de outro produto ou serviço.
+- Modificar, descompilar, desmontar ou fazer engenharia reversa do programa.
+- Redistribuir versões alteradas, renomeadas ou parciais.
+- Remover ou alterar avisos de autoria e de direitos autorais.
+
+O código-fonte do DSE não é público. Nada nestes termos concede direito
+sobre ele.
+
+
+3. PROGRAMAS DE TERCEIROS
+
+O DSE depende de dois drivers desenvolvidos por Nefarius Software Solutions
+e.U., instalados separadamente e regidos pelas licenças dos seus próprios
+autores:
+
+  ViGEmBus  — licença BSD 3-Clause  — https://github.com/nefarius/ViGEmBus
+  HidHide   — licença MIT           — https://github.com/nefarius/HidHide
+
+O DSE também utiliza bibliotecas de terceiros distribuídas junto com o
+programa; os avisos de copyright correspondentes acompanham esta
+distribuição.
+
+
+4. AUSÊNCIA DE GARANTIA
+
+O DSE É FORNECIDO "COMO ESTÁ", SEM GARANTIA DE QUALQUER NATUREZA, EXPRESSA
+OU IMPLÍCITA, INCLUINDO MAS NÃO SE LIMITANDO A GARANTIAS DE ADEQUAÇÃO A UM
+FIM ESPECÍFICO, FUNCIONAMENTO ININTERRUPTO OU AUSÊNCIA DE DEFEITOS.
+
+O programa depende de drivers que operam em nível de sistema e interage com
+dispositivos conectados ao computador. EM NENHUMA HIPÓTESE O AUTOR SERÁ
+RESPONSÁVEL POR QUAISQUER DANOS — DIRETOS, INDIRETOS, INCIDENTAIS OU
+CONSEQUENTES — DECORRENTES DO USO OU DA IMPOSSIBILIDADE DE USO DO DSE,
+INCLUINDO PERDA DE DADOS, MAU FUNCIONAMENTO DO SISTEMA OU DANOS A
+EQUIPAMENTOS.
+
+O uso do programa é de inteira responsabilidade do usuário.
+
+
+5. ACEITE
+
+Ao instalar ou usar o DSE, você declara concordar com estes termos. Se não
+concordar, não utilize o programa e apague os arquivos.
