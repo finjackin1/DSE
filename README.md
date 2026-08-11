@@ -13,6 +13,8 @@ ou Bluetooth, reconhece o controle sozinho e não precisa de configuração.
 - **Emulação por perfil**: Xbox 360 (compatível com praticamente todo jogo de PC)
   ou DualShock 4 (mantém giroscópio, touchpad e lightbar nos jogos que suportam).
 - **Troca de perfil na hora**, sem fechar o jogo.
+- **Vibração dos jogos** repassada ao controle, nos dois perfis, por USB ou
+  Bluetooth.
 - **Controle da lightbar**: cor fixa por perfil ou repasse da cor que o jogo pedir.
 - **Nível de bateria** na tela, com aviso quando está acabando.
 - **Desliga o controle** por atalho, de verdade — sem precisar do console.
@@ -30,11 +32,17 @@ ou Bluetooth, reconhece o controle sozinho e não precisa de configuração.
 | `Share` + `Options` | Alterna entre os perfis Xbox 360 e DualShock 4 |
 | `PS` segurado por 1s | Desliga o controle (só por Bluetooth) |
 | `Options` + `PS` por 1s | Liga/desliga a emulação daquele controle |
+| Clique no touchpad + `PS` por 1s | Alterna o LED entre a cor do perfil e a cor que o jogo pedir |
 
-Os dois atalhos do `PS` continuam funcionando mesmo com a emulação desativada,
+Os atalhos do `PS` continuam funcionando mesmo com a emulação desativada,
 enquanto o DSE estiver aberto — é assim que dá pra reativar a emulação sem tocar
-no teclado. O próprio controle avisa o que aconteceu: ao desativar, as luzes
-apagam; ao reativar, a lightbar acende na cor do perfil.
+no teclado.
+
+O controle avisa pelo tato qual atalho pegou: ativar a emulação dá um tremor
+grave subindo, desativar dá o mesmo tremor descendo, e a troca do modo do LED dá
+dois toques secos. **Solte os botões assim que sentir a vibração** — segurar o
+`PS` por cerca de 10 segundos desliga o controle, e isso é do próprio aparelho,
+não do DSE.
 
 ## Na janela
 
@@ -85,6 +93,15 @@ virtual pode falhar.
   suporte nativo a DualSense, desative a emulação daquele controle e use-o direto.
 
 ---
+
+## Aviso de novas versões
+
+Ao abrir, o DSE consulta uma vez a página de releases deste repositório para
+saber se existe versão mais nova. Se houver, aparece uma seta verde na barra de
+título (e um aviso na bandeja) que leva à página de download.
+
+É a **única** vez que o programa acessa a internet, ele não envia nada sobre você
+ou sobre o seu uso, e falha em silêncio se não houver conexão.
 
 ## Relatando um problema
 
