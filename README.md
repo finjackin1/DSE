@@ -63,6 +63,23 @@ não do DSE.
 
 Não há instalador: a pasta é autocontida e pode ficar onde você quiser.
 
+### Compilando do código-fonte
+
+O portable publicado nas Releases sai deste mesmo código. Para gerar o seu:
+
+```
+git clone https://github.com/finjackin1/DSE.git
+cd DSE
+publicar-dse.bat
+```
+
+O resultado fica em `dist\DSE-Portable\`. Para apenas rodar em
+desenvolvimento, use `rodar-dse.bat`.
+
+Precisa do [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+(o SDK, não só o Runtime). Os pacotes NuGet são restaurados automaticamente.
+A solução também abre direto no Visual Studio 2022 pelo `DSE.sln`.
+
 ### Requisitos
 
 | Item | Observação |
@@ -126,11 +143,12 @@ Bluetooth) e o rumo de cada funcionalidade são de [finjackin](https://github.co
 
 ## Licença
 
-DSE © 2026 finjackin. Todos os direitos reservados.
+Copyright © 2026 finjackin.
 
-O programa é gratuito e pode ser repassado sem alterações, mas não pode ser
-vendido nem modificado. O código-fonte não é público. Os termos completos estão
-no arquivo [LICENSE.txt](LICENSE.txt) que acompanha o programa.
+O DSE é software livre, distribuído sob a **GNU General Public License v3.0** —
+os termos completos estão em [LICENSE](LICENSE). Você pode usar, estudar,
+modificar e redistribuir o programa; se distribuir uma versão modificada, ela
+precisa vir também sob a GPLv3, com o código-fonte disponível.
 
-Este projeto usa [ViGEmBus](https://github.com/nefarius/ViGEmBus) (BSD 3-Clause) e
-[HidHide](https://github.com/nefarius/HidHide) (MIT), de Nefarius Software Solutions.
+As bibliotecas e drivers de terceiros usados pelo DSE, com suas respectivas
+licenças, estão listados em [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt).

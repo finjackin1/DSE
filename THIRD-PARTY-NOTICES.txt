@@ -1,0 +1,70 @@
+DSE — Avisos de Terceiros
+=========================
+
+O DSE utiliza os componentes de terceiros listados abaixo. Cada um
+permanece sob a licenca de seu proprio autor. Este arquivo existe para
+atender aos avisos de atribuicao exigidos por essas licencas.
+
+O DSE em si e distribuido sob a GNU General Public License v3.0 — veja
+o arquivo LICENSE.
+
+
+1. BIBLIOTECAS (pacotes NuGet, distribuidos junto com o programa)
+-----------------------------------------------------------------
+
+HidSharp 2.1.0
+  Apache License 2.0
+  Copyright (c) James F. Bellinger
+  https://www.zer7.com/software/hidsharp
+  https://github.com/IntergatedCircuits/HidSharp
+
+Hardcodet.NotifyIcon.Wpf 2.0.1
+  MIT License
+  Copyright (c) 2009-2019 Philipp Sumi
+  Copyright (c) 2019-2024 Philipp Sumi, Robin Krom, Jan Karger
+  https://github.com/hardcodet/wpf-notifyicon
+
+Nefarius.ViGEm.Client 1.21.256
+  MIT License
+  Copyright (c) Nefarius Software Solutions e.U.
+  https://github.com/nefarius/ViGEm.NET
+
+Nefarius.Drivers.HidHide 1.12.0
+  MIT License
+  Copyright (c) Nefarius Software Solutions e.U.
+  https://github.com/nefarius/Nefarius.Drivers.HidHide
+
+Nefarius.Utilities.DeviceManagement 5.2.0
+  MIT License
+  Copyright (c) Nefarius Software Solutions e.U.
+  https://github.com/nefarius/Nefarius.Utilities.DeviceManagement
+
+Microsoft.Win32.Registry 5.0.0
+System.ServiceProcess.ServiceController 8.0.0
+  MIT License
+  Copyright (c) .NET Foundation and Contributors
+  https://github.com/dotnet/runtime
+
+
+2. DRIVERS (instalados separadamente, NAO distribuidos com o DSE)
+-----------------------------------------------------------------
+
+O DSE depende de dois drivers desenvolvidos por Nefarius Software
+Solutions e.U. Eles sao instalados a parte, pelo proprio instalador de
+cada um, e regidos pelas licencas de seus autores:
+
+ViGEmBus
+  BSD 3-Clause License
+  https://github.com/nefarius/ViGEmBus
+
+HidHide
+  MIT License
+  https://github.com/nefarius/HidHide
+
+
+3. COMPATIBILIDADE COM A GPLv3
+-------------------------------
+
+Apache License 2.0 e compativel com a GPL versao 3 (nao com a versao 2).
+MIT e BSD 3-Clause sao compativeis com a GPL em qualquer versao. Nenhuma
+das dependencias acima impede a distribuicao do DSE sob a GPLv3.

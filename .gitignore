@@ -19,6 +19,15 @@ log.*
 *.user
 *.suo
 
+# Contexto interno (anotacoes de desenvolvimento, nao publicar)
+docs/CONTEXTO.md
+
+# Relatorios de teste gerados em execucao
+relatorios/
+
+# Backups locais
+*.bak
+
 # Sistema
 Thumbs.db
 desktop.ini

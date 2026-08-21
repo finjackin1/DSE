@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <Platforms>x64</Platforms>
+    <RootNamespace>DSE.App</RootNamespace>
+    <AssemblyName>DSE.App</AssemblyName>
+    <StartupObject>DSE.App.App</StartupObject>
+    <ApplicationIcon>Assets\dse_icon.ico</ApplicationIcon>
+    <Version>1.1.0</Version>
+    <Product>DSE</Product>
+    <Company>finjackin</Company>
+    <Authors>finjackin</Authors>
+    <Copyright>Copyright (C) 2026 finjackin</Copyright>
+    <Description>Suporte plug-and-play a controles PlayStation no Windows</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\ds4_body.png" />
+    <Resource Include="Assets\dualsense_body.png" />
+    <Resource Include="Assets\ds4_touchpad_mask.png" />
+    <Resource Include="Assets\dualsense_touchpad_mask.png" />
+    <Resource Include="Assets\dse_icon.ico" />
+    <Resource Include="Assets\dse_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DSE.Core\DSE.Core.csproj" />
+  </ItemGroup>
+
+</Project>

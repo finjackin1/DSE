@@ -1,0 +1,38 @@
+<Window x:Class="DSE.App.Views.SetupWizardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DSE — Dependências"
+        Width="560" Height="480"
+        Icon="/Assets/dse_icon.ico"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="{StaticResource SurfaceBrush}">
+    <Grid Margin="24">
+        <Grid.LayoutTransform>
+            <ScaleTransform ScaleX="1.3" ScaleY="1.3"/>
+        </Grid.LayoutTransform>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Faltam dependências" FontSize="18" FontWeight="Bold"
+                   Foreground="{StaticResource TextBrush}" Margin="0,0,0,4"/>
+        <TextBlock Grid.Row="1" TextWrapping="Wrap" FontSize="11"
+                   Foreground="{StaticResource MutedBrush}" Margin="0,0,0,16">
+            O DSE precisa dos drivers abaixo pra funcionar. Clique em "Instalar" que ele
+            baixa e abre o instalador oficial pra você. Depois de instalar, é MUITO
+            recomendado REINICIAR o computador — o Windows precisa disso pra carregar os
+            drivers direito (senão o controle virtual pode falhar ao criar). Após reiniciar,
+            abra o DSE de novo.
+        </TextBlock>
+
+        <StackPanel x:Name="DependencyList" Grid.Row="2"/>
+
+        <Button Grid.Row="3" x:Name="RecheckButton" Content="Já instalei — verificar de novo"
+                Style="{StaticResource SecondaryButton}" HorizontalAlignment="Stretch"
+                Click="OnRecheckClick" Margin="0,8,0,0"/>
+    </Grid>
+</Window>
