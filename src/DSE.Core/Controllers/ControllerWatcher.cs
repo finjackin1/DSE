@@ -197,6 +197,7 @@ public sealed class ControllerWatcher : IDisposable
             if (!_sessions.TryGetValue(serial, out session)) return;
             session.LedMode = mode;
         }
+        _profileManager.SetLedMode(serial, mode);
 
         // Fora do lock: escreve no controle.
         if (mode == LedMode.Preset)
@@ -626,7 +627,7 @@ public sealed class ControllerWatcher : IDisposable
             VirtualController = virtualController,
             Hotkeys = hotkeys,
             Cts = sessionCts,
-            LedMode = LedMode.Preset
+            LedMode = _profileManager.GetLedMode(serial)
         };
 
         hotkeys.HotkeyTriggered += evt => OnHotkeyTriggered(session, evt);
@@ -859,6 +860,14 @@ public sealed class ControllerWatcher : IDisposable
             }
             consecutiveEmptyReads = 0;
 
+            // Só o report de input completo: USB 0x01; BT 0x11 (DS4) ou 0x31
+            // (DualSense). Por BT o controle manda o 0x01 "simples" até entrar
+            // no modo completo, e os offsets dele são outros: lido como se
+            // fosse o completo, virava botão/gatilho fantasma por um instante.
+            byte expectedId = !session.IsBluetooth ? (byte)0x01
+                : session.Type == PhysicalControllerType.DualShock4 ? (byte)0x11 : (byte)0x31;
+            if (buffer[0] != expectedId) continue;
+
             NormalizedInputState? parsedState = null;
             try
             {
@@ -1077,49 +1086,108 @@ public sealed class ControllerWatcher : IDisposable
         }
     }
 
+    /// <summary>
+    /// Troca o perfil de um controle (atalho do controle, botão da janela ou
+    /// atalho do teclado). Serializado por sessão: dois pedidos ao mesmo tempo
+    /// (janela + controle) não podem recriar o alvo virtual em paralelo.
+    /// </summary>
+    private void ApplyProfile(ControllerSession session, EmulationProfile newProfile)
+    {
+        lock (session.ProfileLock)
+        {
+            if (session.TornDown) return;
+            if (session.VirtualController.ActiveProfile == newProfile) return;
+
+            if (session.LedLoopTask != null && session.LedLoopCts != null)
+            {
+                session.LedLoopCts.Cancel();
+                try { session.LedLoopTask.Wait(TimeSpan.FromMilliseconds(500)); } catch { /* ignora */ }
+                session.LedLoopTask = null;
+                session.LedLoopCts = null;
+            }
+
+            _profileManager.SetProfile(session.Serial, newProfile);
+            session.VirtualController.SwitchProfile(newProfile);
+
+            if (newProfile == EmulationProfile.DualShock4 && session.LedLoopTask == null)
+            {
+                session.LedLoopCts = CancellationTokenSource.CreateLinkedTokenSource(session.Cts.Token);
+                session.LedLoopTask = Task.Run(() => LedPassthroughLoopAsync(session, session.LedLoopCts.Token));
+            }
+
+            if (session.LedMode == LedMode.Preset)
+            {
+                ApplyPresetColor(session, newProfile);
+            }
+        }
+
+        ProfileChanged?.Invoke(new ActiveControllerInfo
+        {
+            Serial = session.Serial,
+            Type = session.Type,
+            IsBluetooth = session.IsBluetooth,
+            Profile = newProfile,
+            LedMode = session.LedMode
+        });
+    }
+
+    private void PowerOff(ControllerSession session)
+    {
+        if (session.IsBluetooth)
+        {
+            BluetoothDisconnector.TryDisconnect(session.Serial);
+        }
+        TeardownSession(session, isManualDisable: false);
+    }
+
+    private ControllerSession? FindSession(string serial)
+    {
+        lock (_sync) return _sessions.TryGetValue(serial, out var s) ? s : null;
+    }
+
+    /// <summary>Escolhe o perfil de um controle (janela / atalho do teclado). Bloqueia até ~0,5 s: chamar fora da thread da interface.</summary>
+    public void SetProfile(string serial, EmulationProfile profile)
+    {
+        var session = FindSession(serial);
+        if (session != null) ApplyProfile(session, profile);
+    }
+
+    /// <summary>Alterna Xbox 360 ↔ DualShock 4. Chamar fora da thread da interface.</summary>
+    public void ToggleProfile(string serial)
+    {
+        var session = FindSession(serial);
+        if (session != null) ApplyProfile(session, session.VirtualController.ActiveProfile.Toggle());
+    }
+
+    /// <summary>Desliga o controle (Bluetooth) ou só encerra a sessão (USB). Igual ao atalho PS 1 s.</summary>
+    public void PowerOffController(string serial)
+    {
+        var session = FindSession(serial);
+        if (session != null) PowerOff(session);
+    }
+
+    /// <summary>Controles com a emulação desativada pelo usuário.</summary>
+    public IReadOnlyList<string> GetDisabledSerials()
+    {
+        lock (_sync) return _disabledSerials.ToList();
+    }
+
+    /// <summary>Perfil salvo do controle (vale também com a emulação desativada).</summary>
+    public EmulationProfile GetSavedProfile(string serial) => _profileManager.GetProfile(serial);
+
+    /// <summary>Grava o perfil com que o controle volta quando a emulação for reativada.</summary>
+    public void SetSavedProfile(string serial, EmulationProfile profile) => _profileManager.SetProfile(serial, profile);
+
     private void OnHotkeyTriggered(ControllerSession session, HotkeyEvent evt)
     {
         switch (evt)
         {
             case HotkeyEvent.ToggleProfile:
-                if (session.LedLoopTask != null && session.LedLoopCts != null)
-                {
-                    session.LedLoopCts.Cancel();
-                    try { session.LedLoopTask.Wait(TimeSpan.FromMilliseconds(500)); } catch { /* ignora */ }
-                    session.LedLoopTask = null;
-                    session.LedLoopCts = null;
-                }
-
-                var newProfile = _profileManager.ToggleProfile(session.Serial);
-                session.VirtualController.SwitchProfile(newProfile);
-
-                if (newProfile == EmulationProfile.DualShock4 && session.LedLoopTask == null)
-                {
-                    session.LedLoopCts = CancellationTokenSource.CreateLinkedTokenSource(session.Cts.Token);
-                    session.LedLoopTask = Task.Run(() => LedPassthroughLoopAsync(session, session.LedLoopCts.Token));
-                }
-
-                if (session.LedMode == LedMode.Preset)
-                {
-                    ApplyPresetColor(session, newProfile);
-                }
-
-                ProfileChanged?.Invoke(new ActiveControllerInfo
-                {
-                    Serial = session.Serial,
-                    Type = session.Type,
-                    IsBluetooth = session.IsBluetooth,
-                    Profile = newProfile,
-                    LedMode = session.LedMode
-                });
+                ApplyProfile(session, session.VirtualController.ActiveProfile.Toggle());
                 break;
 
             case HotkeyEvent.PowerOffController:
-                if (session.IsBluetooth)
-                {
-                    BluetoothDisconnector.TryDisconnect(session.Serial);
-                }
-                TeardownSession(session, isManualDisable: false);
+                PowerOff(session);
                 break;
 
             case HotkeyEvent.ToggleLedMode:
@@ -1471,6 +1539,8 @@ public sealed class ControllerWatcher : IDisposable
         /// ordem dos seq bater com a ordem das escritas.
         /// </summary>
         public readonly object WriteLock = new();
+        // Serializa trocas de perfil (atalho do controle x janela x teclado).
+        public readonly object ProfileLock = new();
 
         // Força ATUAL dos motores. Fica na sessão porque cor e vibração
         // viajam no mesmo report de saída: qualquer escrita precisa carregar

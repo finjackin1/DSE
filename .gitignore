@@ -21,6 +21,12 @@ log.*
 
 # Contexto interno (anotacoes de desenvolvimento, nao publicar)
 docs/CONTEXTO.md
+docs/PARADA.md
+docs/NAO-EXCLUIR.md
+docs/contexto/
+docs/historico/
+.claude/
+CLAUDE.md
 
 # Relatorios de teste gerados em execucao
 relatorios/

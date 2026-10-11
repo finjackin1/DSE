@@ -19,6 +19,10 @@ public sealed class NormalizedInputState
     public bool Share, Options, Ps, TouchpadClick;
     public bool DpadUp, DpadDown, DpadLeft, DpadRight;
     public byte L2, R2; // 0-255 analógico
+    // Bit DIGITAL do gatilho (o controle real manda os dois: analógico e
+    // "apertado"). Menus de jogo leem o bit, não o analógico — sem ele o R2
+    // não funciona no menu do Rocket League com DS4 virtual (11/out/2026).
+    public bool L2Button, R2Button;
     public short LX, LY, RX, RY; // -32768 a 32767
 
     // Campos de movimento/touch — só usados no caminho de decodificação
@@ -50,6 +54,7 @@ public sealed class NormalizedInputState
         Share = Options = Ps = TouchpadClick = false;
         DpadUp = DpadDown = DpadLeft = DpadRight = false;
         L2 = R2 = 0;
+        L2Button = R2Button = false;
         LX = LY = RX = RY = 0;
         GyroX = GyroY = GyroZ = 0;
         AccelX = AccelY = AccelZ = 0;
@@ -78,6 +83,9 @@ public sealed class VirtualController : IDisposable
     // "new byte[63]" por frame, ~250 vezes por segundo por controle. O acesso
     // é sempre de dentro do _vigemLock, então uma instância só é segura.
     private readonly byte[] _ds4ReportBuffer = new byte[63];
+    // Relógio do timestamp do report DS4 montado (caminho DualSense).
+    private readonly System.Diagnostics.Stopwatch _timestampClock = System.Diagnostics.Stopwatch.StartNew();
+    private byte _touchPacketCounter;
 
 
     private ViGEmClient _client;
@@ -141,6 +149,7 @@ public sealed class VirtualController : IDisposable
             // que garante que nada do perfil anterior sobreviva no bus, mesmo
             // que o Disconnect acima não tenha surtido efeito.
             if (recycleClient) RecycleClientNoLock();
+            _lastXbox = null; // alvo novo: o primeiro estado sempre vai
 
             switch (profile)
             {
@@ -211,6 +220,9 @@ public sealed class VirtualController : IDisposable
             }
 
             target = _client.CreateXbox360Controller();
+            // Padrão da lib é true: cada Set* enviava um report parcial (~20
+            // por frame). O SubmitXbox360 já envia UM report completo no fim.
+            target.AutoSubmitReport = false;
             _allCreatedTargets.Add(target); // rastreia pra limpeza garantida no teardown
             target.FeedbackReceived += OnXbox360Feedback;
             try
@@ -260,6 +272,7 @@ public sealed class VirtualController : IDisposable
             }
 
             target = _client.CreateDualShock4Controller();
+            target.AutoSubmitReport = false; // idem Xbox: SubmitDs4 envia no fim
             _allCreatedTargets.Add(target); // rastreia pra limpeza garantida no teardown
             try
             {
@@ -334,6 +347,14 @@ public sealed class VirtualController : IDisposable
     {
         var pad = _xbox360!;
 
+        // O controle físico manda ~250 reports/s mesmo parado; o Xbox 360 real
+        // só manda quando algo muda. Repetir o mesmo estado enchia a fila de
+        // input de jogo sem foco (Alt+Tab), e ao voltar o controle demorava a
+        // responder enquanto ele "engolia" o acúmulo (11/out/2026).
+        var atual = (Botoes: XboxButtonsKey(s), s.L2, s.R2, s.LX, s.LY, s.RX, s.RY);
+        if (_lastXbox.HasValue && _lastXbox.Value == atual) return;
+        _lastXbox = atual;
+
         pad.SetButtonState(Xbox360Button.A, s.Cross);
         pad.SetButtonState(Xbox360Button.B, s.Circle);
         pad.SetButtonState(Xbox360Button.X, s.Square);
@@ -361,6 +382,15 @@ public sealed class VirtualController : IDisposable
         pad.SubmitReport();
     }
 
+    private (int Botoes, byte L2, byte R2, short LX, short LY, short RX, short RY)? _lastXbox;
+
+    // Sem array: roda ~250x/s e não pode alocar.
+    private static int XboxButtonsKey(NormalizedInputState s) =>
+        (s.Cross ? 1 : 0) | (s.Circle ? 2 : 0) | (s.Square ? 4 : 0) | (s.Triangle ? 8 : 0)
+        | (s.L1 ? 16 : 0) | (s.R1 ? 32 : 0) | (s.L3 ? 64 : 0) | (s.R3 ? 128 : 0)
+        | (s.Share ? 256 : 0) | (s.Options ? 512 : 0) | (s.Ps ? 1024 : 0)
+        | (s.DpadUp ? 2048 : 0) | (s.DpadDown ? 4096 : 0) | (s.DpadLeft ? 8192 : 0) | (s.DpadRight ? 16384 : 0);
+
     // Convenção HID (usada pelo report bruto do DS4/DualSense): eixo Y cresce
     // para BAIXO (cima = valor negativo). Convenção XInput/Xbox: eixo Y cresce
     // para CIMA (cima = valor positivo) — o oposto. Só o perfil Xbox precisa
@@ -382,6 +412,8 @@ public sealed class VirtualController : IDisposable
         pad.SetButtonState(DualShock4Button.ThumbRight, s.R3);
         pad.SetButtonState(DualShock4Button.Share, s.Share);
         pad.SetButtonState(DualShock4Button.Options, s.Options);
+        pad.SetButtonState(DualShock4Button.TriggerLeft, IsTriggerPressed(s.L2Button, s.L2));
+        pad.SetButtonState(DualShock4Button.TriggerRight, IsTriggerPressed(s.R2Button, s.R2));
         pad.SetButtonState(DualShock4SpecialButton.Ps, s.Ps);
         pad.SetButtonState(DualShock4SpecialButton.Touchpad, s.TouchpadClick);
 
@@ -397,6 +429,11 @@ public sealed class VirtualController : IDisposable
 
         pad.SubmitReport();
     }
+
+    // Bit digital do gatilho: o do controle físico, ou o analógico passando do
+    // ponto em que o DS4 real liga o bit (garante o bit mesmo se o físico não mandar).
+    // Margem de 8: gatilho gasto pode repousar em 1-3 e não pode virar "apertado".
+    private static bool IsTriggerPressed(bool digital, byte analog) => digital || analog > 8;
 
     // DS4 usa eixos de 0-255 (centro em 128), diferente do short de -32768/32767 do Xbox.
     private static byte ToByteAxis(short axisValue) => (byte)((axisValue / 256) + 128);
@@ -544,6 +581,8 @@ public sealed class VirtualController : IDisposable
             if (s.Triangle) wButtons |= 0x80;
             if (s.L1) wButtons |= 0x0100;
             if (s.R1) wButtons |= 0x0200;
+            if (IsTriggerPressed(s.L2Button, s.L2)) wButtons |= 0x0400; // L2 digital
+            if (IsTriggerPressed(s.R2Button, s.R2)) wButtons |= 0x0800; // R2 digital (menus)
             if (s.Share) wButtons |= 0x1000;
             if (s.Options) wButtons |= 0x2000;
             if (s.L3) wButtons |= 0x4000;
@@ -560,8 +599,21 @@ public sealed class VirtualController : IDisposable
             buffer[7] = s.L2;
             buffer[8] = s.R2;
 
-            // [9-10] timestamp — deixa em 0, não é crítico pra maioria dos jogos.
-            buffer[11] = 0; // bateria — TODO: reportar nível real quando disponível
+            // [9-10] timestamp em unidades de ~5,33 µs, como o DS4 real. Parado
+            // em 0, quem integra o giroscópio pelo tempo do report (SDL/Steam)
+            // via intervalo zero entre frames.
+            ushort ts = (ushort)(_timestampClock.ElapsedTicks * 3 / (System.Diagnostics.Stopwatch.Frequency / 62500));
+            WriteShortLE(buffer, 9, (short)ts);
+            buffer[11] = 0;
+
+            // [29] bateria no formato do DS4 (nível nos 4 bits baixos, 0x10 =
+            // cabo). Zerado, jogo e Steam mostravam bateria vazia.
+            if (s.BatteryPercent >= 0)
+            {
+                int max = s.IsCharging ? 10 : 9;
+                int level = (int)Math.Round(Math.Clamp(s.BatteryPercent, 0, 100) * max / 100.0);
+                buffer[29] = (byte)(level | (s.IsCharging ? 0x10 : 0));
+            }
 
             WriteShortLE(buffer, 12, s.GyroX);
             WriteShortLE(buffer, 14, s.GyroY);
@@ -584,6 +636,10 @@ public sealed class VirtualController : IDisposable
             // aqui, então o bit 7 nunca ligava e o controle virtual anunciava
             // dedo encostado o tempo todo — o ponto seguia o dedo e congelava
             // no último lugar tocado. As coordenadas sempre estiveram certas.
+            // 32 = quantos pacotes de touch vêm no report (0 = "não leia o
+            // touch"); 33 = contador do pacote, como no DS4 real.
+            buffer[32] = 1;
+            buffer[33] = _touchPacketCounter++;
             buffer[34] = (byte)(s.TouchActive ? 0x00 : 0x80);
             buffer[35] = (byte)(s.TouchX & 0xFF);
             buffer[36] = (byte)(((s.TouchX >> 8) & 0x0F) | ((s.TouchY & 0x0F) << 4));

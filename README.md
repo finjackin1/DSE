@@ -24,6 +24,11 @@ ou Bluetooth, reconhece o controle sozinho e não precisa de configuração.
 - **Desliga sozinho** o controle esquecido ligado depois de 10 minutos parado.
 - **Desliga o Bluetooth automaticamente** quando você pluga o cabo USB no mesmo
   controle, evitando conexão duplicada.
+- **Lembra cada controle**: o perfil e o modo da luz voltam como você deixou,
+  mesmo depois de reiniciar o PC.
+- **Atalhos do teclado** (opcionais) para mostrar a janela, trocar o perfil,
+  ligar/desligar a emulação e desligar os controles, mesmo com o DSE escondido.
+- **Se atualiza sozinho**: avisa quando sai versão nova e instala com um clique.
 
 ## Atalhos no controle
 
@@ -46,12 +51,22 @@ não do DSE.
 
 ## Na janela
 
-- Clique no **corpo do controle** para ligar/desligar a emulação dele.
-- Clique no **touchpad** para alternar o modo da lightbar.
-- O botão **?** na barra de título abre a lista completa de atalhos.
-- Os outros botões da barra controlam iniciar com o Windows, abrir a janela
-  ao iniciar, minimizar para a bandeja e fechar.
-- Fechado, o DSE continua na bandeja; duplo clique no ícone reabre.
+- À esquerda, o **perfil** (Xbox 360, DualShock 4 ou desativar a emulação) e a
+  **luz** (cor do perfil ou cor do jogo) do controle escolhido. Teclas `1`, `2`
+  e `0` também trocam o perfil.
+- À direita, os **controles conectados**, com bateria e botão de desligar
+  (Bluetooth), e a imagem do controle: clique no **corpo** para ligar/desligar a
+  emulação e no **touchpad** para alternar a luz.
+- Sem controle conectado, a janela mostra como parear e abre as configurações de
+  Bluetooth do Windows num clique.
+- O botão **?** abre a lista completa de atalhos do controle; o botão de
+  **opções** abre: iniciar com o Windows (e iniciar mais rápido), iniciar
+  minimizado, desligar o Bluetooth ao plugar o cabo, procurar atualização e os
+  atalhos do teclado.
+- O **X** esconde o DSE na bandeja; segurar o X por 1 segundo fecha de vez.
+- Na bandeja, um clique abre a janela e outro clique fecha; o duplo clique só
+  abre. O **botão direito** mostra os controles conectados com a bateria
+  e dá acesso às opções, à atualização e ao fechar.
 
 ---
 
@@ -70,11 +85,11 @@ O portable publicado nas Releases sai deste mesmo código. Para gerar o seu:
 ```
 git clone https://github.com/finjackin1/DSE.git
 cd DSE
-publicar-dse.bat
+powershell -ExecutionPolicy Bypass -File ferramentas\empacotar.ps1
 ```
 
-O resultado fica em `dist\DSE-Portable\`. Para apenas rodar em
-desenvolvimento, use `rodar-dse.bat`.
+O resultado fica em `dist\DSE\DSE.App.exe` (e o zip em `dist\`). Para apenas
+rodar em desenvolvimento: `dotnet run --project src\DSE.App`.
 
 Precisa do [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 (o SDK, não só o Runtime). Os pacotes NuGet são restaurados automaticamente.
@@ -111,14 +126,25 @@ virtual pode falhar.
 
 ---
 
-## Aviso de novas versões
+## Atualização
 
-Ao abrir, o DSE consulta uma vez a página de releases deste repositório para
-saber se existe versão mais nova. Se houver, aparece uma seta verde na barra de
-título (e um aviso na bandeja) que leva à página de download.
+O DSE consulta as releases deste repositório no prazo escolhido nas opções
+(todo dia, toda semana — o padrão —, todo mês ou nunca), e também quando você
+clica em **Procurar agora**. Se houver versão nova, aparece um aviso na bandeja e
+uma seta verde na barra de título; ele não interrompe o jogo com perguntas.
 
-É a **única** vez que o programa acessa a internet, ele não envia nada sobre você
-ou sobre o seu uso, e falha em silêncio se não houver conexão.
+Ao clicar no aviso, o DSE pergunta se pode atualizar:
+
+- **Sim**: baixa o zip da release, confere o tamanho e o SHA-256 publicados pelo
+  GitHub, pede permissão de administrador, fecha, troca os arquivos e abre de
+  novo na versão nova. Perfis, luzes, atalhos e opções são mantidos.
+- **Não**: aquela versão deixa de ser avisada (dá pra instalar depois pelo
+  **Procurar agora**).
+
+Essa consulta e o download são os **únicos** acessos à internet do programa; ele
+não envia nada sobre você ou sobre o seu uso, e falha em silêncio se não houver
+conexão. Quem preferir pode escolher **nunca** e atualizar à mão pela aba
+Releases.
 
 ## Relatando um problema
 

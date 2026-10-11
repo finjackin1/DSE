@@ -19,6 +19,26 @@ public sealed class AppSettings
 
     // OBS: o desligamento por inatividade (10min) é FIXO no watcher, por
     // decisão de design — sem opção de configuração pro usuário.
+
+    // Atalhos globais do teclado (ação -> teclas). Nascem VAZIOS (padrão da casa).
+    public Dictionary<string, AtalhoTeclado> Atalhos { get; set; } = new();
+
+    // Posição da janela (canto superior esquerdo, em DIP). null = centralizada.
+    public double? JanelaX { get; set; }
+    public double? JanelaY { get; set; }
+
+    // Atualizador (padrão scrcpy-f): prazo "diario" | "semanal" | "mensal" | "nunca",
+    // quando procurou pela última vez e a versão que ele recusou ("Não" pula AQUELA).
+    public string ProcurarAtualizacao { get; set; } = "semanal";
+    public DateTime? UltimaProcura { get; set; }
+    public string? PularVersao { get; set; }
+}
+
+/// <summary>Teclas de um atalho global: modificadores (MOD_ALT=1, CTRL=2, SHIFT=4, WIN=8) + tecla virtual.</summary>
+public sealed class AtalhoTeclado
+{
+    public int Mods { get; set; }
+    public int Vk { get; set; }
 }
 
 /// <summary>

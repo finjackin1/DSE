@@ -70,6 +70,8 @@ public static class DualSenseReportParser
         byte buttons1 = report[off + 8];
         state.L1 = (buttons1 & 0x01) != 0;
         state.R1 = (buttons1 & 0x02) != 0;
+        state.L2Button = (buttons1 & 0x04) != 0;
+        state.R2Button = (buttons1 & 0x08) != 0;
         state.Share = (buttons1 & 0x10) != 0; // "Create" no DualSense
         state.Options = (buttons1 & 0x20) != 0;
         state.L3 = (buttons1 & 0x40) != 0;

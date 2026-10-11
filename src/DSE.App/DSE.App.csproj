@@ -11,7 +11,7 @@
     <AssemblyName>DSE.App</AssemblyName>
     <StartupObject>DSE.App.App</StartupObject>
     <ApplicationIcon>Assets\dse_icon.ico</ApplicationIcon>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <Product>DSE</Product>
     <Company>finjackin</Company>
     <Authors>finjackin</Authors>

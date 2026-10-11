@@ -1,4 +1,5 @@
 using System.Text.Json;
+using DSE.Core.Controllers;
 
 namespace DSE.Core.Profiles;
 
@@ -12,6 +13,7 @@ public sealed class ProfileManager
     private readonly string _storePath;
     private readonly object _lock = new();
     private Dictionary<string, EmulationProfile> _profiles = new();
+    private Dictionary<string, LedMode> _leds = new();
 
     public EmulationProfile DefaultProfile { get; set; } = EmulationProfile.Xbox360;
 
@@ -55,34 +57,66 @@ public sealed class ProfileManager
         return next;
     }
 
+    /// <summary>
+    /// Modo de luz salvo pro controle (Preset na primeira vez). Fica em
+    /// leds.json, ao lado do profiles.json.
+    /// </summary>
+    public LedMode GetLedMode(string controllerSerial)
+    {
+        lock (_lock)
+        {
+            return _leds.TryGetValue(controllerSerial, out var mode) ? mode : LedMode.Preset;
+        }
+    }
+
+    public void SetLedMode(string controllerSerial, LedMode mode)
+    {
+        lock (_lock)
+        {
+            if (_leds.TryGetValue(controllerSerial, out var atual) && atual == mode) return;
+            _leds[controllerSerial] = mode;
+            SaveFile(LedsPath, _leds);
+        }
+    }
+
+    private string LedsPath => Path.Combine(Path.GetDirectoryName(_storePath)!, "leds.json");
+
     private void Load()
+    {
+        _profiles = LoadFile<EmulationProfile>(_storePath);
+        _leds = LoadFile<LedMode>(LedsPath);
+    }
+
+    private static Dictionary<string, T> LoadFile<T>(string path)
     {
         try
         {
-            if (!File.Exists(_storePath))
-                return;
+            if (!File.Exists(path))
+                return new Dictionary<string, T>();
 
-            var json = File.ReadAllText(_storePath);
-            _profiles = JsonSerializer.Deserialize<Dictionary<string, EmulationProfile>>(json)
-                        ?? new Dictionary<string, EmulationProfile>();
+            var json = File.ReadAllText(path);
+            return JsonSerializer.Deserialize<Dictionary<string, T>>(json)
+                   ?? new Dictionary<string, T>();
         }
         catch
         {
             // Arquivo corrompido ou inacessível: segue com dicionário vazio,
-            // não deve derrubar o app por causa de persistência de perfil.
-            _profiles = new Dictionary<string, EmulationProfile>();
+            // não deve derrubar o app por causa de persistência.
+            return new Dictionary<string, T>();
         }
     }
 
-    private void Save()
+    private void Save() => SaveFile(_storePath, _profiles);
+
+    private static void SaveFile<T>(string path, Dictionary<string, T> data)
     {
         try
         {
-            var dir = Path.GetDirectoryName(_storePath)!;
+            var dir = Path.GetDirectoryName(path)!;
             Directory.CreateDirectory(dir);
 
-            var json = JsonSerializer.Serialize(_profiles, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(_storePath, json);
+            var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(path, json);
         }
         catch
         {

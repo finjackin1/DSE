@@ -41,7 +41,8 @@ public static class Ds4ReportParser
         byte buttons2 = report[off + 5];
         state.L1 = (buttons2 & 0x01) != 0;
         state.R1 = (buttons2 & 0x02) != 0;
-        // bits 2,3 = L2/R2 digital (ignorado; usamos o analógico abaixo)
+        state.L2Button = (buttons2 & 0x04) != 0;
+        state.R2Button = (buttons2 & 0x08) != 0;
         state.Share = (buttons2 & 0x10) != 0;
         state.Options = (buttons2 & 0x20) != 0;
         state.L3 = (buttons2 & 0x40) != 0;
