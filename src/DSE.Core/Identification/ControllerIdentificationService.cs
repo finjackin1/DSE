@@ -63,10 +63,8 @@ public sealed class ControllerIdentificationService : IDisposable
 
                 _knownPaths.Add(device.DevicePath);
 
-                string? serial = null;
-                try { serial = device.GetSerialNumber(); } catch { /* nem todo device expõe */ }
-
                 bool isBluetooth = SafeGetMaxLen(device) >= ControllerConstants.ReportLength.Ds4Bluetooth;
+                var serial = ControllerSerial.Read(device, isBluetooth);
 
                 ControllerArrived?.Invoke(new IdentifiedController
                 {

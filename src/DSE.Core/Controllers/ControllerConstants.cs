@@ -77,6 +77,13 @@ public static class ControllerConstants
         if (string.IsNullOrWhiteSpace(devicePath))
             return false;
 
+        // Caminho certo: a árvore de dispositivos (pega o cabo, que é
+        // composto e não tem "usb#" no caminho). A heurística de texto abaixo
+        // fica só pra quando a árvore não puder ser lida.
+        var pelaArvore = DeviceTree.IsPhysical(devicePath);
+        if (pelaArvore.HasValue)
+            return pelaArvore.Value;
+
         var lower = devicePath.ToLowerInvariant();
 
         bool looksLikeUsb = lower.Contains("usb#") || lower.Contains(@"usb\");

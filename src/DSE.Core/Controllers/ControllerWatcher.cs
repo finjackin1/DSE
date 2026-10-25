@@ -273,8 +273,7 @@ public sealed class ControllerWatcher : IDisposable
                      .Where(d => ControllerConstants.IsSupported(d.VendorID, d.ProductID))
                      .Where(d => ControllerConstants.IsLikelyPhysicalDevice(d.DevicePath)))
         {
-            string? s = null;
-            try { s = device.GetSerialNumber(); } catch { /* nem todo device expõe */ }
+            var s = ControllerSerial.Read(device, IsLikelyBluetooth(device));
             if ((s ?? device.DevicePath) == serial) return device;
         }
         return null;
@@ -542,7 +541,7 @@ public sealed class ControllerWatcher : IDisposable
             if (!_pendingSerials.Add(serial)) return;
         }
 
-        DseLog.Write($"[watcher] controle chegou: {info.Type} via {(info.IsBluetooth ? "BT" : "USB")}");
+        DseLog.Write($"[watcher] controle chegou: {info.Type} via {(info.IsBluetooth ? "BT" : "USB")} (id {(ControllerSerial.Normalize(serial) != null ? "MAC" : "caminho")})");
 
         try
         {

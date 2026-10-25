@@ -1,4 +1,4 @@
-namespace DSE.Core.Lightbar;
+﻿namespace DSE.Core.Lightbar;
 
 /// <summary>
 /// Monta o output report que controla a lightbar do DualSense.
@@ -22,7 +22,9 @@ namespace DSE.Core.Lightbar;
 ///   [43] player_leds
 ///   [44] lightbar_red   [45] lightbar_green   [46] lightbar_blue
 ///
-/// USB (report 0x02, 63 bytes): report_id + payload comum + reserved.
+/// USB (report 0x02, 48 bytes): report_id + payload comum. O Linux usa 63,
+///     mas no Windows o report tem de ter EXATAMENTE o tamanho que o controle
+///     declara (48); com 63 a escrita falha com "parâmetro incorreto".
 /// BT  (report 0x31, 78 bytes): report_id + seq_tag + tag(0x10) + payload
 ///     comum + reserved + CRC32.
 ///
@@ -34,6 +36,7 @@ namespace DSE.Core.Lightbar;
 public static class DualSenseLightbarReport
 {
     private const byte UsbReportId = 0x02;
+    private const int UsbReportSize = 48;
     private const byte BtReportId = 0x31;
     private const byte BtTag = 0x10; // "magic number must be set to 0x10" (kernel)
 
@@ -65,8 +68,7 @@ public static class DualSenseLightbarReport
     public static byte[] BuildUsbReport(byte red, byte green, byte blue,
                                        byte rumbleLeft = 0, byte rumbleRight = 0)
     {
-        // DS_OUTPUT_REPORT_USB_SIZE = 63 (report_id + 47 comum + 15 reserved).
-        var report = new byte[63];
+        var report = new byte[UsbReportSize];
         report[0] = UsbReportId;
 
         int p = 1; // payload logo após o report id
@@ -112,7 +114,7 @@ public static class DualSenseLightbarReport
     /// </summary>
     public static byte[] BuildUsbGoodbyeReport()
     {
-        var report = new byte[63];
+        var report = new byte[UsbReportSize];
         report[0] = UsbReportId;
         WriteCommon(report, 1, 0, 0, 0, clearPlayerLeds: true, lightOut: true);
         return report;
@@ -150,7 +152,7 @@ public static class DualSenseLightbarReport
     /// </summary>
     public static byte[] BuildUsbInitReport()
     {
-        var report = new byte[63];
+        var report = new byte[UsbReportSize];
         report[0] = UsbReportId;
         WriteCommon(report, 1, 0, 0, 0, clearPlayerLeds: true, lightOut: true);
         return report;

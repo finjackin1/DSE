@@ -24,17 +24,20 @@ $ok = $false
 $estavaAberto = $false
 $exe = Join-Path $saida 'DSE.App.exe'
 try {
-    if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) { throw '.NET SDK nao encontrado no PATH' }
+    # Primeiro dotnet com SDK: o do PATH (pode ser so o runtime) ou o portatil em A:\opt\dotnet.
+    $dotnet = @((Get-Command dotnet -All -ErrorAction SilentlyContinue).Source) + 'A:\opt\dotnet\dotnet.exe' |
+        Where-Object { $_ -and (Test-Path $_) -and (& $_ --list-sdks) } | Select-Object -First 1
+    if (-not $dotnet) { throw '.NET SDK nao encontrado (PATH ou A:\opt\dotnet)' }
 
     # Copia so o codigo (sem bin/obj) para a pasta temporaria.
     New-Item -ItemType Directory -Force $temp | Out-Null
-    Copy-Item (Join-Path $raiz 'DSE.sln') $temp
+    Copy-Item (Join-Path $raiz 'DSE.sln'), (Join-Path $raiz 'nuget.config') $temp
     robocopy (Join-Path $raiz 'src') (Join-Path $temp 'src') /E /XD bin obj /NFL /NDL /NJH /NJS /NP | Out-Null
     if ($LASTEXITCODE -ge 8) { throw "robocopy falhou ($LASTEXITCODE)" }
 
     Log '[1/3] Publicando...'
     $pub = Join-Path $temp 'pub'
-    dotnet publish (Join-Path $temp 'src\DSE.App\DSE.App.csproj') -c Release -r win-x64 --self-contained false -o $pub --nologo -v q | Out-File -Append -Encoding UTF8 $relArq
+    & $dotnet publish (Join-Path $temp 'src\DSE.App\DSE.App.csproj') -c Release -r win-x64 --self-contained false -o $pub --nologo -v q | Out-File -Append -Encoding UTF8 $relArq
     if ($LASTEXITCODE -ne 0) { throw 'o publish falhou (detalhe acima)' }
     Get-ChildItem $pub -Filter *.pdb -Recurse | Remove-Item -Force
     foreach ($f in 'LICENSE', 'THIRD-PARTY-NOTICES.txt', 'README.md') {
