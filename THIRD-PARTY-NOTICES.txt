@@ -1,15 +1,15 @@
-DSE — Avisos de Terceiros
+DSE - Avisos de terceiros
 =========================
 
-O DSE utiliza os componentes de terceiros listados abaixo. Cada um
-permanece sob a licenca de seu proprio autor. Este arquivo existe para
-atender aos avisos de atribuicao exigidos por essas licencas.
+O DSE usa os componentes de terceiros listados abaixo. Cada um
+permanece sob a licença do seu autor. Este arquivo existe para
+atender aos avisos de atribuição exigidos por essas licencas.
 
-O DSE em si e distribuido sob a GNU General Public License v3.0 — veja
-o arquivo LICENSE.
+O DSE em si é distribuído sob a GNU General Public License v3.0
+(arquivo LICENSE).
 
 
-1. BIBLIOTECAS (pacotes NuGet, distribuidos junto com o programa)
+1. BIBLIOTECAS (pacotes NuGet, distribuídos junto com o programa)
 -----------------------------------------------------------------
 
 HidSharp 2.1.0
@@ -46,12 +46,12 @@ System.ServiceProcess.ServiceController 8.0.0
   https://github.com/dotnet/runtime
 
 
-2. DRIVERS (instalados separadamente, NAO distribuidos com o DSE)
+2. DRIVERS (instalados separadamente, NÃO distribuídos com o DSE)
 -----------------------------------------------------------------
 
 O DSE depende de dois drivers desenvolvidos por Nefarius Software
-Solutions e.U. Eles sao instalados a parte, pelo proprio instalador de
-cada um, e regidos pelas licencas de seus autores:
+Solutions e.U. Eles são instalados à parte, pelo próprio instalador de
+cada um, e regidos pelas licenças de seus autores:
 
 ViGEmBus
   BSD 3-Clause License
@@ -65,6 +65,6 @@ HidHide
 3. COMPATIBILIDADE COM A GPLv3
 -------------------------------
 
-Apache License 2.0 e compativel com a GPL versao 3 (nao com a versao 2).
-MIT e BSD 3-Clause sao compativeis com a GPL em qualquer versao. Nenhuma
-das dependencias acima impede a distribuicao do DSE sob a GPLv3.
+Apache License 2.0 é compatível com a GPL versão 3 (não com a versão 2).
+MIT e BSD 3-Clause são compatíveis com a GPL em qualquer versão. Nenhuma
+das dependencias acima impede a distribuição do DSE sob a GPLv3.

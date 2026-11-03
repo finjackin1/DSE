@@ -1,23 +1,21 @@
 # DSE
 
-Suporte plug-and-play a controles PlayStation no Windows.
-
-O DSE faz seu **DualShock 4** ou **DualSense** funcionar em qualquer jogo de PC,
-emulando um controle **Xbox 360** ou um **DualShock 4** virtual. Conecta por USB
+O DSE faz seu DualShock 4 ou DualSense funcionar em qualquer jogo de PC,
+emulando um controle Xbox 360 ou um DualShock 4 virtual. Conecta por USB
 ou Bluetooth, reconhece o controle sozinho e não precisa de configuração.
 
 ---
 
 ## O que ele faz
 
-- **Emulação por perfil**: Xbox 360 (compatível com praticamente todo jogo de PC)
+- **Emulação por perfil**: Xbox 360 (funciona em quase todo jogo de PC)
   ou DualShock 4 (mantém giroscópio, touchpad e lightbar nos jogos que suportam).
 - **Troca de perfil na hora**, sem fechar o jogo.
 - **Vibração dos jogos** repassada ao controle, nos dois perfis, por USB ou
   Bluetooth.
 - **Controle da lightbar**: cor fixa por perfil ou repasse da cor que o jogo pedir.
 - **Nível de bateria** na tela, com aviso quando está acabando.
-- **Desliga o controle** por atalho, de verdade — sem precisar do console.
+- **Desliga o controle** por atalho, como o console faz.
 - **Desativa a emulação por controle**, devolvendo o aparelho ao Windows quando
   você quiser usá-lo nativamente (em jogos da Steam com suporte a DualSense, por
   exemplo).
@@ -40,12 +38,12 @@ ou Bluetooth, reconhece o controle sozinho e não precisa de configuração.
 | Clique no touchpad + `PS` por 1s | Alterna o LED entre a cor do perfil e a cor que o jogo pedir |
 
 Os atalhos do `PS` continuam funcionando mesmo com a emulação desativada,
-enquanto o DSE estiver aberto — é assim que dá pra reativar a emulação sem tocar
+enquanto o DSE estiver aberto. É assim que dá pra reativar a emulação sem tocar
 no teclado.
 
 O controle avisa pelo tato qual atalho pegou: ativar a emulação dá um tremor
 grave subindo, desativar dá o mesmo tremor descendo, e a troca do modo do LED dá
-dois toques secos. **Solte os botões assim que sentir a vibração** — segurar o
+dois toques secos. **Solte os botões assim que sentir a vibração.** Segurar o
 `PS` por cerca de 10 segundos desliga o controle, e isso é do próprio aparelho,
 não do DSE.
 
@@ -72,13 +70,13 @@ não do DSE.
 
 ## Instalação
 
-1. Baixe o DSE portable na aba [Releases](https://github.com/finjackin1/DSE/releases).
+1. Baixe o zip do DSE na aba [Releases](https://github.com/finjackin1/DSE/releases).
 2. Extraia em qualquer pasta e rode o `DSE.App.exe`.
 3. Na primeira execução, o assistente instala os drivers que faltarem.
 
 Não há instalador: a pasta é autocontida e pode ficar onde você quiser.
 
-### Compilando do código-fonte
+### Como compilar
 
 O portable publicado nas Releases sai deste mesmo código. Para gerar o seu:
 
@@ -99,10 +97,10 @@ A solução também abre direto no Visual Studio 2022 pelo `DSE.sln`.
 
 | Item | Observação |
 |---|---|
-| Windows 10/11 (64 bits) | — |
+| Windows 10 ou 11, 64 bits | |
 | [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) | Se faltar, o Windows avisa com o link ao abrir o programa |
-| [ViGEmBus](https://github.com/nefarius/ViGEmBus) | Cria os controles virtuais — o assistente do DSE instala |
-| [HidHide](https://github.com/nefarius/HidHide) | Esconde o controle físico pra o jogo não ver dois — o assistente instala |
+| [ViGEmBus](https://github.com/nefarius/ViGEmBus) | Cria os controles virtuais. O assistente do DSE instala |
+| [HidHide](https://github.com/nefarius/HidHide) | Esconde o controle físico para o jogo não ver dois. O assistente instala |
 
 Depois de instalar os drivers pela primeira vez, **reinicie o computador**. O
 Windows precisa disso para carregá-los, e sem o reinício a criação do controle
@@ -121,7 +119,7 @@ virtual pode falhar.
 - **Luzes brancas do DualSense**: ao desativar a emulação, o controle volta a ser
   visível para o sistema e a Steam acende o indicador de jogador. É o mesmo
   comportamento de conectar o controle sem o DSE.
-- A emulação é de **Xbox 360 ou DualShock 4** — não de DualSense. Para jogos com
+- A emulação é de Xbox 360 ou DualShock 4; não existe perfil DualSense. Para jogos com
   suporte nativo a DualSense, desative a emulação daquele controle e use-o direto.
 
 ---
@@ -129,7 +127,7 @@ virtual pode falhar.
 ## Atualização
 
 O DSE consulta as releases deste repositório no prazo escolhido nas opções
-(todo dia, toda semana — o padrão —, todo mês ou nunca), e também quando você
+(todo dia, toda semana, que é o padrão, todo mês ou nunca), e também quando você
 clica em **Procurar agora**. Se houver versão nova, aparece um aviso na bandeja e
 uma seta verde na barra de título; ele não interrompe o jogo com perguntas.
 
@@ -141,14 +139,14 @@ Ao clicar no aviso, o DSE pergunta se pode atualizar:
 - **Não**: aquela versão deixa de ser avisada (dá pra instalar depois pelo
   **Procurar agora**).
 
-Essa consulta e o download são os **únicos** acessos à internet do programa; ele
+Essa consulta e o download são os únicos acessos à internet do programa; ele
 não envia nada sobre você ou sobre o seu uso, e falha em silêncio se não houver
 conexão. Quem preferir pode escolher **nunca** e atualizar à mão pela aba
 Releases.
 
 ## Relatando um problema
 
-O DSE tem um log de diagnóstico **desligado por padrão**. Para ativá-lo, crie um
+O DSE tem um log de diagnóstico desligado por padrão. Para ativá-lo, crie um
 arquivo (ou pasta) vazio chamado `log` na mesma pasta do `DSE.App.exe`, reproduza
 o problema e anexe o `dse.log` que aparecer ali. O log recomeça a cada execução e
 não é gravado enquanto o marcador não existir.
@@ -161,7 +159,7 @@ digita.
 ## Como foi feito
 
 O DSE foi desenvolvido com apoio de inteligência artificial: o código foi escrito
-em conversa com o **Claude**, da Anthropic (no Claude Code). As decisões de projeto, o desenho da
+em conversa com o Claude, da Anthropic (no Claude Code). As decisões de projeto, o desenho da
 interface, os testes em hardware real (DualShock 4 e DualSense, por USB e
 Bluetooth) e o rumo de cada funcionalidade são de [finjackin](https://github.com/finjackin1).
 
@@ -171,8 +169,8 @@ Bluetooth) e o rumo de cada funcionalidade são de [finjackin](https://github.co
 
 Copyright © 2026 finjackin.
 
-O DSE é software livre, distribuído sob a **GNU General Public License v3.0** —
-os termos completos estão em [LICENSE](LICENSE). Você pode usar, estudar,
+O DSE é software livre, distribuído sob a GNU General Public License v3.0.
+Os termos completos estão em [LICENSE](LICENSE). Você pode usar, estudar,
 modificar e redistribuir o programa; se distribuir uma versão modificada, ela
 precisa vir também sob a GPLv3, com o código-fonte disponível.
 
